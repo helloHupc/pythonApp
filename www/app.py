@@ -13,13 +13,14 @@ from datetime import datetime
 from aiohttp import web
 
 def index(request):
-    return web.Response(body=b'<h1>Awesome~ hello python!1111</h1>')
+    return web.Response(body=b'<h1>Awesome~ hello python!</h1>',content_type='text/html')
 
-@asyncio.coroutine
-def init(loop):
-    app = web.Application(loop=loop)
+async def init(loop):
+    app = web.Application()
     app.router.add_route('GET','/',index)
-    srv = yield from loop.create_server(app.make_handler(),'127.0.0.1',9000)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    srv = await loop.create_server(runner.server,'127.0.0.1',9000)
     logging.info('server started at http://127.0.0.1:9000...')
     return srv
 
